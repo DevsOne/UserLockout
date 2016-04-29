@@ -80,6 +80,7 @@ namespace UserLockout.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    // When token is verified correctly, clear the access failed count used for lockout
                     await UserManager.ResetAccessFailedCountAsync(user.Id);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -90,7 +91,7 @@ namespace UserLockout.Controllers
                 default:
                     if (user != null)
                     {
-                        await UserManager.AccessFailedAsync(user.Id);
+                        await UserManager.AccessFailedAsync(user.Id);// Record the failure
                         if (await UserManager.IsLockedOutAsync(user.Id))
                         {
                             ModelState.AddModelError("", "Your account has been locked out for 5 minutes due to multiple failed login attempts.");
